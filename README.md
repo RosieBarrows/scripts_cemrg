@@ -76,9 +76,9 @@ conda activate py4ch
     a. Note: SVC/IVC tips are used for removing sections protruding from wrong side of RA
 
 15) From seg_scripts,
-    '''
+    ```
     python create_slicers.py [/heart_folder/segmentations]
-    '''
+    ```
 
 17) From seg_scripts,
     ```
