@@ -124,7 +124,7 @@ pts2 = points_data['SVC_slicer_2']
 pts3 = points_data['SVC_slicer_3']
 points = np.row_stack((pts1,pts2,pts3))
 
-slicer_radius = 30
+slicer_radius = 45
 slicer_height = 2
 cylinder(seg_name,points,path2points+"/SVC_slicer.nrrd",slicer_radius, slicer_height,origin,spacing)
 
@@ -134,6 +134,6 @@ pts2 = points_data['IVC_slicer_2']
 pts3 = points_data['IVC_slicer_3']
 points = np.row_stack((pts1,pts2,pts3))
 
-slicer_radius = 30
+slicer_radius = 45
 slicer_height = 2
 cylinder(seg_name,points,path2points+"/IVC_slicer.nrrd",slicer_radius, slicer_height,origin,spacing)
