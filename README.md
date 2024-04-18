@@ -76,25 +76,27 @@ conda activate py4ch
     a. Note: SVC/IVC tips are used for removing sections protruding from wrong side of RA
 
 15) From seg_scripts,
-    'python create_slicers.py [/heart_folder/segmentations]'
+    '''
+    python create_slicers.py [/heart_folder/segmentations]
+    '''
 
-16) From seg_scripts,
+17) From seg_scripts,
     ```
     python crop_svc_ivc.py [/heart_folder/segmentations]
     ```
 
-17) From seg_scripts.
+18) From seg_scripts.
     ```
     python create_myo.py [/heart_folder/segmentations]
     ```
 
-18) Select a seed point for the Ao_wall_tip and PArt_wall_tip
-19) From seg_scripts,
+19) Select a seed point for the Ao_wall_tip and PArt_wall_tip
+20) From seg_scripts,
     ```
     python create_valve_planes.py [/heart_folder/segmentations]
     ```
 
-20) Load the most recent .nrrd and inspect the segmentation. From the clean_seg.py scripts, leave uncommented those modifications that would improve your segmentation (it is best that the rest stay commented out).
+21) Load the most recent .nrrd and inspect the segmentation. From the clean_seg.py scripts, leave uncommented those modifications that would improve your segmentation (it is best that the rest stay commented out).
 
     From seg_scripts,
     ```
