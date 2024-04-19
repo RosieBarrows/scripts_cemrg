@@ -107,6 +107,16 @@ save_itk(seg_s3a_array, origin, spacings, path2points+'/seg_s3a.nrrd')
 print(" ## LV neck: Preventing hole in neck due to RV BP ## \n")
 
 # ----------------------------------------------------------------------------------------------
+# LV_myo is pushed by RA_BP
+# ----------------------------------------------------------------------------------------------
+print(' ## Pushing LV_myo with RA_BP ## \n')
+seg_s3a_array = push_inside(path2points,path2points+'seg_s3a.nrrd',RA_BP_label,LV_myo_label,LV_BP_label,LV_neck_WT)
+seg_s3a_array = np.swapaxes(seg_s3a_array,0,2)
+save_itk(seg_s3a_array, origin, spacings, path2points+'/seg_s3a.nrrd')
+print(" ## LV neck: Preventing hole in neck due to RA BP ## \n")
+
+
+# ----------------------------------------------------------------------------------------------
 # Create the aortic wall
 # ----------------------------------------------------------------------------------------------
 print(' ## Step 2/10: Creating the aortic wall ## \n')
