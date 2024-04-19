@@ -150,7 +150,7 @@ print(' ## Pulmonary artery wall: Adding pulmonary artery wall to segmentation #
 PArt_wall_array, header = nrrd.read(path2points+'/tmp/PArt_wall.nrrd')
 seg_s3b_array, header = nrrd.read(path2points+'seg_s3b.nrrd')
 PArt_wall_array = add_masks_replace(PArt_wall_array,PArt_wall_array,PArt_wall_label)
-seg_s3c_array = add_masks_replace_except_2(seg_s3b_array,PArt_wall_array,PArt_wall_label,3,Ao_wall_label)
+seg_s3c_array = add_masks_replace_except_2(seg_s3b_array,PArt_wall_array,PArt_wall_label,RV_BP_label,Ao_wall_label)
 
 # ----------------------------------------------------------------------------------------------
 # Format and save the segmentation
