@@ -59,14 +59,13 @@ At this point, talk with Cristobal for the next steps.
 
 24) Run `align_segmentation.py /heart_folder/segmentations`. Not very well tested, check the output of this compared to the dicom/nifti images or with the first segmentation of the pipeline.
 
-23) Check all the labels one last time. It is common that lose voxels appear, so run connected components in all the labels. Export it as `seg_final_smooth_corrected.nrrd`. Convert it to `.inr` using `segconvert` -->
+23) Check all the labels one last time. It is common that lose voxels appear, so run connected components in all the labels. Export it as `seg_final_smooth_corrected.nrrd`. Convert it to `.inr` using `segconvert --resolution 0.15 0.15 0.15` -->
 
 Meshing
 =========================================================================================================
 1) Run `python3 meshing.py /heart_folder`
 
 2) cd into the meshing folder (inside heart folder)
-2) Modify `heart_mesh_data_file` to point to your segmentation and folder paths.
 3) Run `bash generate_heart_mesh_Cesare.sh`
 
 4) Run `bash mesh_post.sh /heart_folder` ## watch out mesh tool path currently hard-coded ##
