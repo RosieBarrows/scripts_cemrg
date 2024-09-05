@@ -50,6 +50,7 @@ LA_WT = sf*thickness_data["LA"]
 RA_WT = sf*thickness_data["RA"]
 Ao_WT = sf*thickness_data["aorta"]
 PArt_WT = sf*thickness_data["RV"]
+rings_thickness = sf*thickness_data["rings"]
 
 LV_BP_label = 1
 LV_myo_label = 2
@@ -330,37 +331,37 @@ cut_labels.open_artery(path2image      = f"{path2points}/seg_s3c.nrrd",
 # save_itk_keeping_header(new_image=seg_PA_wall_biggest_cc, original_image=seg_array_good_header, filename=f"{path2points}/seg_PA_wall_biggest_cc.nrrd")
 
 print(" ## Cropping major vessels: Saved segmentation with aorta and pulmonary artery sliced ## \n")
-"""
-# ----------------------------------------------------------------------------------------------
-# Prepare the seeds for the tips of the aorta and pulmonary artery
-# ----------------------------------------------------------------------------------------------
-Ao_tip_seed = points_data['Ao_tip']
-PArt_tip_seed = points_data['PArt_tip']
-Ao_wall_tip_seed = points_data['Ao_WT_tip']
-PArt_wall_tip_seed = points_data['PArt_WT_tip']
-
-# ----------------------------------------------------------------------------------------------
-# Crop the aorta and save the segmentation
-# ----------------------------------------------------------------------------------------------
-print(' ## Cropping major vessels: Cropping the aorta ## \n')
-seg_s3e_nrrd = path2points+'/seg_s3e.nrrd'
-seg_s3f_array = connected_component(seg_s3e_nrrd, Ao_tip_seed, Ao_BP_label,path2points)
-seg_s3f_array = np.swapaxes(seg_s3f_array,0,2)
-# save_itk(seg_s3f_array, origin, spacings, path2points+'/seg_s3f.nrrd')
-save_itk_keeping_header(new_image=seg_s3f_array, original_image=seg_array_good_header, filename=path2points+'/seg_s3f.nrrd')
 
 
-# ----------------------------------------------------------------------------------------------
-# Crop the pulmonary artery and save the segmentation
-# ----------------------------------------------------------------------------------------------
-print(' ## Cropping major vessels: Cropping the pulmonary artery ## \n')
-seg_s3f_nrrd = path2points+'/seg_s3f.nrrd'
-seg_s3f_array = connected_component(seg_s3f_nrrd, PArt_tip_seed, PArt_BP_label,path2points)
-seg_s3f_array = np.swapaxes(seg_s3f_array,0,2)
-# save_itk(seg_s3f_array, origin, spacings, path2points+'/seg_s3f.nrrd')
-save_itk_keeping_header(new_image=seg_s3f_array, original_image=seg_array_good_header, filename=path2points+'/seg_s3f.nrrd')
+# # ----------------------------------------------------------------------------------------------
+# # Prepare the seeds for the tips of the aorta and pulmonary artery
+# # ----------------------------------------------------------------------------------------------
+# Ao_tip_seed = points_data['Ao_tip']
+# PArt_tip_seed = points_data['PArt_tip']
+# Ao_wall_tip_seed = points_data['Ao_WT_tip']
+# PArt_wall_tip_seed = points_data['PArt_WT_tip']
 
-"""
+# # ----------------------------------------------------------------------------------------------
+# # Crop the aorta and save the segmentation
+# # ----------------------------------------------------------------------------------------------
+# print(' ## Cropping major vessels: Cropping the aorta ## \n')
+# seg_s3e_nrrd = path2points+'/seg_s3e.nrrd'
+# seg_s3f_array = connected_component(seg_s3e_nrrd, Ao_tip_seed, Ao_BP_label,path2points)
+# seg_s3f_array = np.swapaxes(seg_s3f_array,0,2)
+# # save_itk(seg_s3f_array, origin, spacings, path2points+'/seg_s3f.nrrd')
+# save_itk_keeping_header(new_image=seg_s3f_array, original_image=seg_array_good_header, filename=path2points+'/seg_s3f.nrrd')
+
+
+# # ----------------------------------------------------------------------------------------------
+# # Crop the pulmonary artery and save the segmentation
+# # ----------------------------------------------------------------------------------------------
+# print(' ## Cropping major vessels: Cropping the pulmonary artery ## \n')
+# seg_s3f_nrrd = path2points+'/seg_s3f.nrrd'
+# seg_s3f_array = connected_component(seg_s3f_nrrd, PArt_tip_seed, PArt_BP_label,path2points)
+# seg_s3f_array = np.swapaxes(seg_s3f_array,0,2)
+# # save_itk(seg_s3f_array, origin, spacings, path2points+'/seg_s3f.nrrd')
+# save_itk_keeping_header(new_image=seg_s3f_array, original_image=seg_array_good_header, filename=path2points+'/seg_s3f.nrrd')
+
 # ----------------------------------------------------------------------------------------------
 # Create the RV myocardium
 # ----------------------------------------------------------------------------------------------
@@ -432,11 +433,13 @@ sitk.WriteImage(RA_BP_DistMap,path2points+'/tmp/RA_BP_DistMap.nrrd',True)
 print(' ## RA myo: Thresholding distance filter ## \n')
 RA_myo = threshold_filter_nrrd(path2points+'/tmp/RA_BP_DistMap.nrrd',0,RA_WT)
 sitk.WriteImage(RA_myo,path2points+'/tmp/RA_myo.nrrd',True)
-
+"""
 print(' ## RA myo: Adding right atrial myocardium to segmentation ## \n')
 RA_myo_array, header = nrrd.read(path2points+'/tmp/RA_myo.nrrd')
 seg_s3hi_array, header = nrrd.read(path2points+'seg_s3h.nrrd')
+
 RA_myo_array = add_masks_replace(RA_myo_array,RA_myo_array,RA_myo_label)
+"""
 seg_s3i_array = add_masks_replace_only(seg_s3hi_array,RA_myo_array,RA_myo_label,RPV1_label)
 
 # ----------------------------------------------------------------------------------------------
@@ -478,13 +481,45 @@ save_itk_keeping_header(new_image=seg_s3k_array, original_image=seg_array_good_h
 
 print(" ## RA myo: Saved segmentation with right atrium pushed by the aorta ## \n")
 
-seg_s3k_array = push_inside(path2points,path2points+'seg_s3k.nrrd',Ao_wall_label,RA_myo_label,SVC_label,RA_WT)
+
+
+print(' ## SVC: Pushing the SVC with the aorta to have space for the SVC ring## \n')
+
+# Step 1: Create disk in SVC hole with RA myo thickness
+
+# We had the RA_myo_array from when we created the RA myo
+SVC_disk = and_filter(imga_array=seg_s3k_array, imgb_array=RA_myo_array, label_a=SVC_label, new_label=SVC_label+100)
+
+# Step 2: Intersect disk with the dilated aorta using the ring thickness and assign it to RA myo
+
+dilated_aorta_image = threshold_filter_nrrd(path2points+'/tmp/Ao_DistMap.nrrd',0,Ao_WT + rings_thickness) # The distance map is from the blood pool
+sitk.WriteImage(dilated_aorta_image,path2points+'/tmp/aorta_distmap_svc_ring.nrrd',True)
+dilated_aorta, _ = nrrd.read(path2points+'/tmp/aorta_distmap_svc_ring.nrrd')  # Now it's an array
+
+
+intersected_disk_array = and_filter(SVC_disk, dilated_aorta, SVC_label+100, RA_myo_label) # This is a semilunar disk of RA myo
+
+# Same steps as always to replace a mask
+intersected_disk_array = add_masks_replace(intersected_disk_array,intersected_disk_array,RA_myo_label)
+seg_s3k_disk_array = add_masks_replace_only(seg_s3k_array,intersected_disk_array,RA_myo_label,SVC_label)
+
+# Step 3: Intersect SVC with the dilated aorta using the ring thickness and set to 0
+
+intersected_SVC_array = and_filter(seg_s3k_disk_array, dilated_aorta, SVC_label, 0) # We ate away a piece of the SVC cylinder with the aorta
+
+# Same steps as always to replace a mask
+intersected_SVC_array = add_masks_replace(intersected_SVC_array,intersected_SVC_array,0)
+seg_s3k_array = add_masks_replace_only(seg_s3k_disk_array,intersected_SVC_array,0,SVC_label)
+
+# seg_s3k_array = push_inside(path2points,path2points+'seg_s3k.nrrd',Ao_wall_label,RA_myo_label,SVC_label,RA_WT)
 
 # ----------------------------------------------------------------------------------------------
 # Format and save the segmentation
 # ----------------------------------------------------------------------------------------------
 print(' ## RA myo: Formatting and saving the segmentation ## \n')
-seg_s3k_array = np.swapaxes(seg_s3k_array,0,2)
+# DO NOT SWAP AXES THIS TIME!!! Otherwise the heart will be mirrored. An alternative solution is to load the array from file after saving it, instead of reusing the array.
+
+# seg_s3k_array = np.swapaxes(seg_s3k_array,0,2)
 # save_itk(seg_s3k_array, origin, spacings, path2points+'/seg_s3k.nrrd')
 save_itk_keeping_header(new_image=seg_s3k_array, original_image=seg_array_good_header, filename=path2points+'/seg_s3k.nrrd')
 
